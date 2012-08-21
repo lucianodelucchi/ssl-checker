@@ -18,5 +18,5 @@ using CommandLine.Text;
 
 
 [assembly: AssemblyUsage(
-  "Usage: ssl-checker URL1 [URL2...URL10] --help")]
+  "Usage: ssl-checker URL1 [URL2...URL10] --help", "You can query up to 10 URLs.")]
 

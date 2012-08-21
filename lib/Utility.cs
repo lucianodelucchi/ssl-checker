@@ -41,8 +41,7 @@ namespace ssl_checker
         }
 
         /// <summary>
-        /// Prepares the request.
-        /// Setting various options.
+        /// Prepare the request and set cookies.
         /// </summary>
         /// <returns>
         /// The request.
@@ -54,6 +53,22 @@ namespace ssl_checker
         /// Cookie collection.
         /// </param>
         public static HttpWebRequest PrepareRequest(Uri requestUri, CookieCollection cookieCollection)
+        {
+            var request = PrepareRequest(requestUri);
+            request.CookieContainer.Add(cookieCollection);
+            return request;
+        }
+
+        /// <summary>
+        /// Prepare the request and set some options.
+        /// </summary>
+        /// <returns>
+        /// The request.
+        /// </returns>
+        /// <param name='requestUri'>
+        /// Request URI.
+        /// </param>
+        public static HttpWebRequest PrepareRequest(Uri requestUri)
         {
             // Create a request with the Uri requestUri parameter.
             // we don't want all the content just the HEAD
@@ -68,12 +83,11 @@ namespace ssl_checker
 
             //there could be some cookies in the response, so we need to havae a jar for them
             request.CookieContainer = new CookieContainer();
-            cookieCollection = cookieCollection ?? new CookieCollection();
+            var cookieCollection = new CookieCollection();
             request.CookieContainer.Add(cookieCollection);
 
             return request;
         }
-
     }
 }
 

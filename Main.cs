@@ -14,12 +14,13 @@ namespace ssl_checker
 
             var options = new Options();
 
+            //if no arguments
             if (0 == args.Length)
             {
+                //show the help screen
                 Console.WriteLine(options.GetUsage());
                 Environment.Exit(1);
             }
-
 
             if (!CommandLineParser.Default.ParseArguments(args, options))
                 Environment.Exit(1);
@@ -44,20 +45,18 @@ namespace ssl_checker
 
             foreach (var url in options.Urls)
             {
-                GetSslInfo(Utillty.FormatURL(url));
+                GetSslInfo(Utillty.PrepareRequest(Utillty.FormatURL(url)));
             }
 			
         }
 
-		static void GetSslInfo(Uri requestUri, CookieCollection cookieCollection = null)
+        public static void GetSslInfo(HttpWebRequest request)
         {
+
             HttpWebResponse response = null;
 
             try
             {
-                                         
-                var request = Utillty.PrepareRequest(requestUri, cookieCollection);
-
                 // Get the response object
                 response = (HttpWebResponse)request.GetResponse();
 
@@ -66,11 +65,11 @@ namespace ssl_checker
 
                 if (null == SSLCertificate)
                 {
-                    Console.WriteLine(string.Format("Couldn't find a SSL certificate for {0}", requestUri));
+                    Console.WriteLine(string.Format("Couldn't find an SSL certificate for {0}", request.RequestUri.ToString()));
                     return;
                 }
 
-                Console.WriteLine(string.Format("SSL Certificate for {0}, expiration date: {1}", requestUri, SSLCertificate.GetExpirationDateString()));
+                Console.WriteLine(string.Format("SSL Certificate for {0}, expiration date: {1}", request.RequestUri.ToString(), SSLCertificate.GetExpirationDateString()));
             } 
             catch (WebException ex)
             {
@@ -81,11 +80,11 @@ namespace ssl_checker
                 //we have to send another request with the cookies set in order to get the response
                 if (null != response && response.StatusCode == HttpStatusCode.Forbidden && response.Cookies.Count > 0)
                 {
-                    GetSslInfo(response.ResponseUri, response.Cookies);
+                    GetSslInfo(Utillty.PrepareRequest(response.ResponseUri, response.Cookies));
 
                 } else
                 {         
-                    Console.WriteLine(string.Format("{0}, URL: {1}", ex.Message, requestUri));         
+                    Console.WriteLine(string.Format("{0}, URL: {1}", ex.Message, request.RequestUri.ToString()));         
                 }
                    
             } 
@@ -97,7 +96,6 @@ namespace ssl_checker
                 }
             }
 
-		}
-
+        }
 	}
 }
