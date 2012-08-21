@@ -8,8 +8,7 @@ namespace ssl_checker
 {
 	class MainClass
 	{
-		private static readonly HeadingInfo _headingInfo = new HeadingInfo(ThisAssembly.Title, ThisAssembly.Version);
-
+		
 		public static void Main (string[] args)
 		{
 
